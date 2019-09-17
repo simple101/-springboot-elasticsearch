@@ -1,14 +1,11 @@
 package com.hl.service;
 
-
 import com.hl.page.Page;
 
 import java.util.List;
 import java.util.Map;
 
 public interface BaseSearchService<T> {
-
-
     /**
      * 搜 索
      */
@@ -16,11 +13,20 @@ public interface BaseSearchService<T> {
 
     /**
      * 搜索高亮显示
+     *
      * @param keyword    关键字
      * @param indexName  索引库
      * @param fieldNames 搜索的字段
      */
     List<Map<String, Object>> queryHit(String keyword, String indexName, String... fieldNames);
+
+    /**
+     * 时间范围
+     *
+     * @param fieldNames 字段
+     * @param indexName 索引库
+     */
+    List<Map<String, Object>> queryHitDate(String indexName, String fieldNames, String startDate, String endDate);
 
     /**
      * 搜索高亮显示，返回分页

@@ -1,15 +1,11 @@
 package com.hl.service.impl;
 
-import com.google.gson.Gson;
 import com.hl.page.Page;
 import com.hl.service.BaseSearchService;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -36,8 +32,10 @@ public class BaseSearchServiceImpl<T> implements BaseSearchService<T> {
 
     @Override
     public List<T> query(String keyword, Class<T> clazz) {
-        SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(
-                new QueryStringQueryBuilder(keyword)).withSort(SortBuilders.scoreSort().order(SortOrder.DESC)).build();
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(new QueryStringQueryBuilder(keyword))
+                .withSort(SortBuilders.scoreSort().order(SortOrder.DESC))
+                .build();
         return elasticsearchTemplate.queryForList(searchQuery, clazz);
     }
 
@@ -63,12 +61,52 @@ public class BaseSearchServiceImpl<T> implements BaseSearchService<T> {
 
         SearchRequestBuilder searchRequestBuilder = elasticsearchTemplate.getClient()
                 .prepareSearch(indexName)
-                .setTypes("_doc")
                 .setQuery(queryBuilder)
                 .highlighter(highlightBuilder)
                 .setSize(10000); // 设置一次返回的文档数量，最大值：1000;
 
-        logger.info("searchRequestBuilder:{}", new Gson().toJson(searchRequestBuilder));
+        logger.info("searchRequestBuilder:{}", searchRequestBuilder);
+
+        // 设置查询字段
+        SearchResponse response = searchRequestBuilder.get();
+        // 返回搜索结果
+        SearchHits hits = response.getHits();
+
+        return getHitList(hits);
+    }
+
+    /**
+     * 范围查询
+     * @param fieldNames 字段
+     * @param indexName 索引库
+     */
+    @Override
+    public List<Map<String, Object>> queryHitDate(String indexName,
+            String fieldNames,String startDate, String endDate) {
+
+        //时间范围的设定
+        RangeQueryBuilder rangeQueryBuilder=QueryBuilders
+                .rangeQuery(fieldNames)
+                .format("yyyy-MM-dd HH:mm:ss")
+                .gt(startDate)
+                .lt(endDate);
+
+        QueryBuilder qbName=QueryBuilders.termQuery("code","local");
+
+        //select * from  user where code='local' and ( ctime>2019-05-12 10:15:14 and ctime <  2019-09-11 23:26:44 ) ;
+        QueryBuilder qb=QueryBuilders.boolQuery()
+                .must(qbName)
+                .must(rangeQueryBuilder);
+
+
+        SearchRequestBuilder searchRequestBuilder = elasticsearchTemplate.getClient()
+                .prepareSearch(indexName)
+//                .setTypes("_doc")
+                .setQuery(qb)
+                .addSort(fieldNames,SortOrder.DESC)
+                .setSize(1000); // 设置一次返回的文档数量，最大值：1000;
+
+        logger.info("searchRequestBuilder:{}", searchRequestBuilder);
 
         // 设置查询字段
         SearchResponse response = searchRequestBuilder.get();
@@ -154,7 +192,9 @@ public class BaseSearchServiceImpl<T> implements BaseSearchService<T> {
                     hitMap.put(v.getName(), hight);
                 }
             });
-            map.put("highlight", hitMap);
+            if (hitMap.size()>0){
+                map.put("highlight", hitMap);
+            }
             list.add(map);
         }
         return list;
