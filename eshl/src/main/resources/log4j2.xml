@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="10" packages="com.eshl.util.logger">
+    <Properties>
+        <!--以maven启动的目录为根目录 -->
+        <Property name="log-path">./logs</Property>
+        <Property name="log-pattern">%d{ISO8601} %highlight{%5p} %t %c{1}.%M %reqId- %msg%n</Property>
+        <Property name="log-level">${env:log4j2_level:-DEBUG}</Property>
+        <Property name="log-console-level">${env:log4j2_console_level:-INFO}</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- DEBUG & TRACE -->
+        <RollingFile name="debug" fileName="${log-path}/debug.log" filePattern="${log-path}/debug-%d{yyyy-MM-dd}.log">
+            <DefaultRolloverStrategy max="4"></DefaultRolloverStrategy>
+            <PatternLayout pattern="${log-pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="8192 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="info" fileName="${log-path}/info.log" filePattern="${log-path}/info-%d{yyyy-MM-dd}.log">
+            <DefaultRolloverStrategy max="4"></DefaultRolloverStrategy>
+            <PatternLayout pattern="${log-pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="4096 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="warn" fileName="${log-path}/warn.log" filePattern="${log-path}/warn-%d{yyyy-MM-dd}.log">
+            <DefaultRolloverStrategy max="8"></DefaultRolloverStrategy>
+            <PatternLayout pattern="${log-pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="4096 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="error" fileName="${log-path}/error.log" filePattern="${log-path}/error-%d{yyyy-MM-dd}.log">
+            <DefaultRolloverStrategy max="8"></DefaultRolloverStrategy>
+            <PatternLayout pattern="${log-pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="4096 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${log-pattern}"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="warn">
+            <appender-ref ref="console"/>
+            <appender-ref ref="warn"/>
+        </Root>
+
+        <Logger name="com.eshl" level="${log-level}" additivity="false">
+            <appender-ref ref="debug"/>
+            <appender-ref ref="info" level="info"/>
+            <appender-ref ref="warn" level="warn"/>
+            <appender-ref ref="error" level="error"/>
+            <appender-ref ref="console" level="${log-console-level}"/>
+        </Logger>
+        <logger name="org.springframework.data.elasticsearch.client.WIRE" level="trace"/>
+        <logger name="org.springframework.data.elasticsearch.core.QUERY" level="DEBUG"></logger>
+    </Loggers>
+
+</Configuration>

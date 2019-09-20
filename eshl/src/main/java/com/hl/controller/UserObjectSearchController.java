@@ -71,6 +71,14 @@ public class UserObjectSearchController {
     }
 
     /**
+     * 按照code查询
+     */
+    @RequestMapping("query/code/{keyword}")
+    public List<UserObjectDocument> queryCode(@PathVariable String keyword) {
+        return userObjectEsSearchService.getByCode(keyword);
+    }
+
+    /**
      * 搜索，命中关键字高亮
      *
      * @param keyword   关键字
@@ -93,12 +101,12 @@ public class UserObjectSearchController {
     /**
      * 时间范围查询
      *
-     * @param fieldNames   字段
-     * @param indexName 索引库名称
+     * @param fieldNames 字段
+     * @param indexName  索引库名称
      */
     @RequestMapping("query_date")
-    public List<Map<String, Object>> queryDate(@RequestParam String indexName,
-            @RequestParam String fieldNames, @RequestParam String startDate, @RequestParam String endDate) {
+    public List<Map<String, Object>> queryDate(@RequestParam String indexName, @RequestParam String fieldNames,
+            @RequestParam String startDate, @RequestParam String endDate) {
 
         return userObjectEsSearchService.queryHitDate(indexName, fieldNames, startDate, endDate);
     }

@@ -29,4 +29,10 @@ public interface UserObjectEsSearchService extends BaseSearchService<UserObjectD
      * 查询全部
      */
     List<UserObjectDocument> getAll();
+
+
+    /**
+     * 根据code查询
+     */
+    List<UserObjectDocument> getByCode(String code);
 }
