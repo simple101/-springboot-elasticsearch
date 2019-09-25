@@ -133,6 +133,14 @@ public class UserObjectSearchController {
         return userObjectEsSearchService.queryHitByPage(pageNo, pageSize, keyword, indexName, fieldNames);
     }
 
+    @RequestMapping("query_after_page")
+    public Page<Map<String, Object>> queryAfterByPage(@RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize, @RequestParam String keyword,
+            @RequestParam String indexName, @RequestParam String fields) {
+
+        return userObjectEsSearchService.searchAfterByPage(pageNo, pageSize, keyword, indexName, fields);
+    }
+
     /**
      * 删除索引库
      */

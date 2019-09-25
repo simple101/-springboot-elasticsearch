@@ -24,7 +24,7 @@ public interface BaseSearchService<T> {
      * 时间范围
      *
      * @param fieldNames 字段
-     * @param indexName 索引库
+     * @param indexName  索引库
      */
     List<Map<String, Object>> queryHitDate(String indexName, String fieldNames, String startDate, String endDate);
 
@@ -39,6 +39,18 @@ public interface BaseSearchService<T> {
      */
     Page<Map<String, Object>> queryHitByPage(int pageNo, int pageSize, String keyword, String indexName,
             String... fieldNames);
+
+    /**
+     * elasticsearchTemplate 实现 searchafter
+     */
+    Page<Map<String, Object>> searchAfterByPage(int pageNo, int pageSize, String keyword, String indexName,
+            String fieldNames);
+
+    /**
+     * RestHighLevelClient 实现search_after
+     */
+    Page<Map<String, Object>> searchAfterByPageRestHighLevel(int pageNo, int pageSize, String keyword, String indexName,
+            String fieldNames);
 
     /**
      * 删除索引库

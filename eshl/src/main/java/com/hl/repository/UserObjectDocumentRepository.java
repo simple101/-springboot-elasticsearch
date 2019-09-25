@@ -4,8 +4,9 @@ import com.hl.document.UserObjectDocument;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 
 @Component
 public interface UserObjectDocumentRepository extends ElasticsearchRepository<UserObjectDocument, String> {
-    Iterable<UserObjectDocument> findUserObjectDocumentByCodeOrderByCtimeDesc(String code);
+    List<UserObjectDocument> findUserObjectDocumentByCodeOrderByCtimeDesc(String code);
 }

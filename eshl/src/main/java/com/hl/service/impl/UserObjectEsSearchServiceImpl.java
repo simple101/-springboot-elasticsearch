@@ -45,9 +45,6 @@ public class UserObjectEsSearchServiceImpl extends BaseSearchServiceImpl<UserObj
 
     @Override
     public List<UserObjectDocument> getByCode(String code) {
-        List<UserObjectDocument> list = new ArrayList<>();
-                userObjectDocumentRepository.findUserObjectDocumentByCodeOrderByCtimeDesc(
-                code).forEach(list::add);
-        return list;
+        return userObjectDocumentRepository.findUserObjectDocumentByCodeOrderByCtimeDesc(code);
     }
 }

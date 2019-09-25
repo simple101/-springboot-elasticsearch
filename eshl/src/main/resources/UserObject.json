@@ -1,5 +1,8 @@
 {
   "properties": {
+    "id": {
+      "type": "long"
+    },
     "asset_address": {
       "type": "text",
       "fields": {
